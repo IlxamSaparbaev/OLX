@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Electronics
+    Home page
 {% endblock title %}
 
 {% block content %}
@@ -14,6 +14,11 @@
                 <img src="{{ product.image.url }}" alt="">
                 <p class="description">{{ product.description }}</p>
                 <p class="price">Цена: {{ product.price }}$</p>
+                <p>Author: {{ product.author }}</p>
+                <p>
+                    <a id="dlt" href="{% url 'sale_delete' product.pk %}">Delete</a>
+                    <a id="upd"  href="{% url 'sale_update' product.pk %}">Update</a>
+                </p>
             </div>
         </div>
 

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Log-out page
+{% endblock %}
+
+{% block content %}
+    <p>
+        Вы успешно вышли свего аккаунта.
+        Вы можете войти <a id="logout" href="{% url 'login' %}">занаво</a> 
+    </p>
+{% endblock %}

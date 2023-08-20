@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Transprot
+    Transport
 {% endblock title %}
 
 {% block content %}
@@ -14,6 +14,7 @@
                 <img src="{{ transport.image.url }}" alt="">
                 <p class="description">{{ transport.description }}</p>
                 <p class="price">Цена: {{ transport.price }}$</p>
+                <p>Author: {{ transport.author }}</p>
             </div>
         </div>
 

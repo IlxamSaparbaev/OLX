@@ -1,25 +1,36 @@
-from django.shortcuts import render, get_object_or_404           
+from django.shortcuts import render, redirect      
 from .models import Product
 from .models import Transport
 from .models import Furniture
 from .models import Cloth
 from .models import Sport
-from django.http import Http404
+from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+
+
+from .forms import ProductForm
 
 def home(request):
-    return render(request, 'base.html')
+    return render(request,'pages/home.html')
 
+@login_required(redirect_field_name='login')
 def electronics(request):
-    products = Product.objects.all()
+    search = request.GET.get('search')
+    if search:
+        products = Product.objects.filter(
+            Q(title__icontains=search)
+        )
+    else:
+        products = Product.objects.all()
     context = {
-        'products':products
+        'products': products
     }
     return render(
         request,
         'pages/electronics.html',
         context
     )
-
+@login_required(redirect_field_name='login')
 def sale_detail(request, pk):
     try:
         product = Product.objects.get(id=pk)
@@ -29,7 +40,7 @@ def sale_detail(request, pk):
         'product': product
     }
     return render(request, 'pages/sale_detail.html', context)
-
+@login_required(redirect_field_name='login')
 def transport(request):
     transports = Transport.objects.all()
     context = {
@@ -48,7 +59,7 @@ def transport_detail(request, pk):
     return render(request, 'pages/transport_detail.html', context)
 
 
-
+@login_required(redirect_field_name='login')
 def furniture(request):
     furnitures = Furniture.objects.all()
     context = {
@@ -67,7 +78,7 @@ def furniture_detail(request, pk):
     return render(request, 'pages/furniture_detail.html', context)
 
 
-
+@login_required(redirect_field_name='login')
 def clothes(request):
     clothes = Cloth.objects.all()
     context = {
@@ -85,7 +96,7 @@ def clothes_detail(request, pk):
     }
     return render(request, 'pages/clothes_detail.html', context)
 
-
+@login_required(redirect_field_name='login')
 def sport(request):
     sport = Sport.objects.all()
     context = {
@@ -102,3 +113,61 @@ def sport_detail(request, pk):
         'sports': sports
     }
     return render(request, 'pages/sport_detail.html',context)
+
+@login_required(redirect_field_name='login')
+def create(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            """cd = form.changed_data
+            Product.objects.create(
+                title=cd['title'],
+                image=cd['image'],
+                description=cd['description'],
+                price=cd['price'],
+                author=cd['author'],
+                condition=cd['condition']
+            )"""
+        return redirect(to='electronics')
+    else: 
+        form = ProductForm()
+
+    #print(ProductForm(request.POST).is_valid())
+    context = {
+        'form': form
+    }
+    return render(request, 'pages/create.html', context)
+
+def sale_delete(request, pk):
+    ProductForm= Product.objects.get(id=pk)
+    ProductForm.delete()
+    return redirect(to='electronics')
+
+
+def sale_update(request, pk):
+    product = Product.objects.get(id=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            title = form.cleaned_data['title']
+            image = form.cleaned_data['image']
+            description = form.cleaned_data['description']
+            price = form.cleaned_data['price']
+            author = form.cleaned_data['author']
+
+            product.title = title
+            product.image = image
+            product.description = description
+            product.price = price
+            product.author = author
+            product.save()
+
+            return redirect(to=electronics)
+    else:
+        form = ProductForm()
+    
+    context = {
+        'form': form
+    }
+    return render(request, 'pages/update.html', context)

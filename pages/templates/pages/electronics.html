@@ -2,14 +2,14 @@
 {% load static %}
 
 {% block title %}
-    Electronics
+    Home page
 {% endblock title %}
 
 {% block content %}
 
 
 <p>
-    Электроника
+    BARCHA TOVARLAR
 </p>
 
     {% for product in products %}
@@ -19,6 +19,7 @@
                 <a href="{% url 'sale_detail' product.pk %}">
                     <img src="{{ product.image.url }}" alt="">
                 </a>
+                
             </div>
         </div>
     {% endfor %}
